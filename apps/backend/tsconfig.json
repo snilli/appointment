@@ -1,0 +1,18 @@
+{
+  "extends": "tsconfig/nestjs.json",
+  "compilerOptions": {
+    "declaration": true,
+    "sourceRoot": "/",
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "paths": {}
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

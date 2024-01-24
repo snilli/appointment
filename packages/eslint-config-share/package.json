@@ -1,0 +1,24 @@
+{
+	"name": "eslint-config-share",
+	"version": "0.0.1",
+	"main": "index.js",
+	"license": "MIT",
+	"devDependencies": {
+		"@babel/eslint-parser": "^7.22.6",
+		"@babel/preset-react": "^7.22.5",
+		"@typescript-eslint/eslint-plugin": "^5.58.0",
+		"@typescript-eslint/parser": "^5.58.0",
+		"eslint": "^8.38.0",
+		"eslint-config-next": "^13.4.8",
+		"eslint-config-prettier": "^8.8.0",
+		"eslint-config-turbo": "^1.10.7",
+		"eslint-plugin-prettier": "^4.2.1",
+		"eslint-plugin-react": "^7.32.2",
+		"prettier": "^3.0.0",
+		"typescript": "^5.1.6",
+		"prettier-config": "workspace:*"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

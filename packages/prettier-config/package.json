@@ -1,0 +1,14 @@
+{
+	"name": "prettier-config",
+	"version": "0.0.1",
+	"private": true,
+	"files": [
+		".prettierrc.js"
+	],
+	"scripts": {
+		"lint": "eslint"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

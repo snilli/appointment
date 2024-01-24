@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: appointments
+    environment:
+      POSTGRES_DB: appointments
+      POSTGRES_USER: superboy
+      POSTGRES_PASSWORD: sofast
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
