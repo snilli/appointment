@@ -4,5 +4,5 @@ import { UserRoleEnum } from '../users.interface'
 export class UpdateUserRoleDto {
 	@IsNotEmpty()
 	@IsEnum(UserRoleEnum)
-	role: string
+	role: UserRoleEnum
 }

@@ -1,24 +1,12 @@
 import { genSalt, hash } from 'bcrypt'
 import { Exclude } from 'class-transformer'
-import {
-	BeforeInsert,
-	BeforeUpdate,
-	Column,
-	CreateDateColumn,
-	DeleteDateColumn,
-	Entity,
-	PrimaryGeneratedColumn,
-	Unique,
-	UpdateDateColumn,
-} from 'typeorm'
+import { ActivityEntity } from 'src/share/entities'
+import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm'
 import { UserRoleEnum } from './users.interface'
 
 @Entity()
 @Unique('user_email', ['email'])
-export class User {
-	@PrimaryGeneratedColumn('uuid')
-	id: string
-
+export class User extends ActivityEntity {
 	@Column({
 		name: 'first_name',
 	})
@@ -36,23 +24,8 @@ export class User {
 	@Exclude()
 	password: string
 
-	@Column({ default: 'user', enum: UserRoleEnum })
+	@Column({ default: UserRoleEnum.USER, enum: UserRoleEnum })
 	role: string
-
-	@CreateDateColumn({
-		name: 'created_at',
-	})
-	createdAt: Date
-
-	@UpdateDateColumn({
-		name: 'updated_at',
-	})
-	updatedAt: Date
-
-	@DeleteDateColumn({
-		name: 'deleted_at',
-	})
-	deletedAt: Date
 
 	@BeforeInsert()
 	@BeforeUpdate()

@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { IsNull, QueryFailedError, Repository } from 'typeorm'
 import { User } from '../users.entity'
-import { CreateUserInput, UpdateUserInfoInput, UpdateUserPasswordInput, UpdateUserRoleInput } from './interface'
+import {
+	CreateUserInput,
+	UpdateUserInfoInput,
+	UpdateUserPasswordInput,
+	UpdateUserRoleInput,
+} from './users.service.interface'
 
 @Injectable()
 export class UsersService {
@@ -57,7 +62,16 @@ export class UsersService {
 		}
 
 		user.updateInfo(input.firstName, input.lastName, input.email)
-		return this.usersRepository.save(user)
+
+		try {
+			await this.usersRepository.save(user)
+		} catch (e) {
+			if (e instanceof QueryFailedError && e['constraint'] === 'user_email') {
+				return null
+			}
+		}
+
+		return user
 	}
 
 	async updatePassword(input: UpdateUserPasswordInput): Promise<User | null> {

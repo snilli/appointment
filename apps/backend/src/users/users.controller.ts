@@ -11,15 +11,21 @@ import {
 	Patch,
 	Post,
 } from '@nestjs/common'
-import { CreateUserDto, UpdateUserPasswordDto } from './users.dto'
-import { UsersService } from './users.service'
+import { CreateUserDto, UpdateUserInfoDto, UpdateUserPasswordDto, UpdateUserRoleDto } from './dto'
+import { UsersService } from './services'
 
 @Controller('users')
 export class UsersController {
 	constructor(@Inject(UsersService) private usersService: UsersService) {}
-	@Get()
-	get() {
-		return null
+
+	@Get(':id')
+	async get(@Param('id', ParseUUIDPipe) id: string) {
+		const user = await this.usersService.getUserById(id)
+		if (!user) {
+			throw new NotFoundException('User not found')
+		}
+
+		return user
 	}
 
 	@Post()
@@ -39,6 +45,36 @@ export class UsersController {
 		return user
 	}
 
+	@Patch(':id')
+	async updateInfo(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateUserInfoDto) {
+		const user = await this.usersService.updateInfo({
+			id,
+			firstName: dto.firstName,
+			lastName: dto.lastName,
+			email: dto.email,
+		})
+
+		if (!user) {
+			throw new NotFoundException('User not found')
+		}
+
+		return user
+	}
+
+	@Patch(':id/role')
+	async updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateUserRoleDto) {
+		const user = await this.usersService.updateRole({
+			id,
+			role: dto.role,
+		})
+
+		if (!user) {
+			throw new NotFoundException('User not found')
+		}
+
+		return user
+	}
+
 	@Patch(':id/password')
 	async updatePassword(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateUserPasswordDto) {
 		const user = await this.usersService.updatePassword({
@@ -47,7 +83,7 @@ export class UsersController {
 		})
 
 		if (!user) {
-			throw new NotFoundException()
+			throw new NotFoundException('User not found')
 		}
 
 		return user
@@ -58,7 +94,7 @@ export class UsersController {
 		const user = await this.usersService.delete(id)
 
 		if (!user) {
-			throw new NotFoundException()
+			throw new NotFoundException('User not found')
 		}
 
 		return user
