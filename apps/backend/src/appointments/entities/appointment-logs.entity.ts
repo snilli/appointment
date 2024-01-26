@@ -1,8 +1,12 @@
+import { Exclude, Transform } from 'class-transformer'
 import { ActorAndActivityEntity } from 'src/share/entities'
-import { Column, Entity } from 'typeorm'
-import { AppointmentStatusEnum } from '../appointments.interface'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { AppointmentStatusEnum, AppointmentStatusPreviewEnum } from '../appointments.interface'
+import { Appointment } from './appointments.entity'
 
-@Entity()
+@Entity({
+	name: 'appointment_log',
+})
 export class AppointmentLog extends ActorAndActivityEntity {
 	@Column()
 	name: string
@@ -10,6 +14,15 @@ export class AppointmentLog extends ActorAndActivityEntity {
 	@Column()
 	description: string
 
-	@Column({ default: AppointmentStatusEnum.TODO, enum: AppointmentStatusEnum })
+	@Transform(({ value }) => AppointmentStatusPreviewEnum[value])
+	@Column({ type: 'enum', default: AppointmentStatusEnum.TODO, enum: AppointmentStatusEnum })
 	status: AppointmentStatusEnum
+
+	@Exclude()
+	@ManyToOne(() => Appointment)
+	@JoinColumn({
+		name: 'appointment_id',
+		referencedColumnName: 'id',
+	})
+	appointment: Appointment | string
 }

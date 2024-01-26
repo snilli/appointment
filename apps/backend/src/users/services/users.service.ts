@@ -2,12 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { IsNull, QueryFailedError, Repository } from 'typeorm'
 import { User } from '../users.entity'
-import {
-	CreateUserInput,
-	UpdateUserInfoInput,
-	UpdateUserPasswordInput,
-	UpdateUserRoleInput,
-} from './users.service.interface'
+import { CreateUserInput, UpdateUserInfoInput, UpdateUserPasswordInput } from './users.service.interface'
 
 @Injectable()
 export class UsersService {
@@ -22,7 +17,6 @@ export class UsersService {
 			lastName: input.lastName,
 			email: input.email,
 			password: input.password,
-			role: input.role,
 		})
 		try {
 			await this.usersRepository.save(user)
@@ -35,7 +29,7 @@ export class UsersService {
 	}
 
 	async delete(id: string): Promise<User | null> {
-		const user = await this.getUserById(id)
+		const user = await this.getById(id)
 		if (!user) {
 			return null
 		}
@@ -44,7 +38,7 @@ export class UsersService {
 		return user
 	}
 
-	async getUserById(id: string): Promise<User | null> {
+	async getById(id: string): Promise<User | null> {
 		return await this.usersRepository.findOneBy({
 			id: id,
 			deletedAt: IsNull(),
@@ -56,7 +50,7 @@ export class UsersService {
 	}
 
 	async updateInfo(input: UpdateUserInfoInput): Promise<User | null> {
-		const user = await this.getUserById(input.id)
+		const user = await this.getById(input.id)
 		if (!user) {
 			return null
 		}
@@ -75,22 +69,12 @@ export class UsersService {
 	}
 
 	async updatePassword(input: UpdateUserPasswordInput): Promise<User | null> {
-		const user = await this.getUserById(input.id)
+		const user = await this.getById(input.id)
 		if (!user) {
 			return null
 		}
 
 		user.password = input.password
-		return this.usersRepository.save(user)
-	}
-
-	async updateRole(input: UpdateUserRoleInput): Promise<User | null> {
-		const user = await this.getUserById(input.id)
-		if (!user) {
-			return null
-		}
-
-		user.role = input.role
 		return this.usersRepository.save(user)
 	}
 }

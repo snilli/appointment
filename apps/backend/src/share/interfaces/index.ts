@@ -1,0 +1,1 @@
+export { PaginatorInput } from './pagination'

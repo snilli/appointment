@@ -1,5 +1,7 @@
+import { buildPaginator } from '@lastlight/typeorm-cursor-pagination'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { PaginatorInput } from 'src/share/interfaces'
 import { IsNull, Repository } from 'typeorm'
 import { Appointment } from '../entities/appointments.entity'
 import { UpdateAppointmentInput } from './appointments.service.interface'
@@ -24,33 +26,52 @@ export class AppointmentsService {
 	}
 
 	async delete(id: string): Promise<Appointment | null> {
-		const user = await this.getUserById(id)
-		if (!user) {
+		const appointment = await this.getById(id)
+		if (!appointment) {
 			return null
 		}
 
 		await this.appointmentsRepository.softDelete(id)
-		return user
+		return appointment
 	}
 
-	async getUserById(id: string): Promise<Appointment | null> {
+	async getById(id: string): Promise<Appointment | null> {
 		return await this.appointmentsRepository.findOneBy({
 			id: id,
 			deletedAt: IsNull(),
 		})
 	}
 
-	async update(input: UpdateAppointmentInput): Promise<Appointment | null> {
-		const appointment = await this.getUserById(input.id)
+	async getByPagination(input: PaginatorInput) {
+		const paginator = buildPaginator({
+			entity: Appointment,
+			paginationKeys: ['id'],
+			query: {
+				limit: input.limit,
+				order: 'ASC',
+				afterCursor: input.afterCursor,
+				beforeCursor: input.beforeCursor,
+			},
+		})
+		return await paginator.paginate(this.appointmentsRepository.createQueryBuilder('appointment'))
+	}
+
+	async update(input: UpdateAppointmentInput): Promise<[Appointment | null, boolean]> {
+		const appointment = await this.getById(input.id)
 		if (!appointment) {
-			return null
+			return [null, false]
+		}
+		const haveChange = appointment.haveChange(input.name, input.description, input.status)
+		if (!haveChange) {
+			return [appointment, false]
 		}
 
 		appointment.name = input.name
 		appointment.description = input.description
 		appointment.updatedBy = input.userId
+		appointment.status = input.status
 		await this.appointmentsRepository.save(appointment)
 
-		return appointment
+		return [appointment, true]
 	}
 }

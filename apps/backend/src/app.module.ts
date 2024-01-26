@@ -1,17 +1,23 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ThrottlerModule } from '@nestjs/throttler'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { configuration } from 'config/configuration'
 import { Configuration, ConfigurationDatabase } from 'config/interface'
+import { AppointmentsModule } from './appointments/appointments.module'
 import { AuthModule } from './auth/auth.module'
-import { User } from './users/users.entity'
 import { UsersModule } from './users/users.module'
-
 @Module({
 	imports: [
 		ConfigModule.forRoot({
 			load: [configuration],
 		}),
+		ThrottlerModule.forRoot([
+			{
+				ttl: 60000,
+				limit: 10,
+			},
+		]),
 		TypeOrmModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
@@ -29,13 +35,12 @@ import { UsersModule } from './users/users.module'
 					synchronize: true,
 					autoLoadEntities: true,
 					host: config.databaseHost,
-					entities: [User],
 				}
 			},
 		}),
-
 		AuthModule,
 		UsersModule,
+		AppointmentsModule,
 	],
 })
 export class AppModule {}

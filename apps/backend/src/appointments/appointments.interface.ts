@@ -4,3 +4,10 @@ export enum AppointmentStatusEnum {
 	DONE = 2,
 	ARCHIVED = 3,
 }
+
+export enum AppointmentStatusPreviewEnum {
+	TODO,
+	IN_PROGRESS,
+	DONE,
+	ARCHIVED,
+}

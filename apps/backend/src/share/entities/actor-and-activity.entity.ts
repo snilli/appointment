@@ -4,7 +4,7 @@ import {
 	CreateDateColumn,
 	DeleteDateColumn,
 	JoinColumn,
-	OneToOne,
+	ManyToOne,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm'
@@ -13,17 +13,19 @@ export class ActorAndActivityEntity {
 	@PrimaryGeneratedColumn('uuid')
 	id: string
 
-	@OneToOne(() => User)
+	@ManyToOne(() => User, { eager: true })
 	@JoinColumn({
 		name: 'created_by',
+		referencedColumnName: 'id',
 	})
-	createdBy: string
+	createdBy: User | string
 
-	@OneToOne(() => User)
+	@ManyToOne(() => User, { eager: true })
 	@JoinColumn({
 		name: 'updated_by',
+		referencedColumnName: 'id',
 	})
-	updatedBy: string
+	updatedBy: User | string
 
 	@CreateDateColumn({
 		name: 'created_at',

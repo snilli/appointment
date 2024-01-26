@@ -1,9 +1,7 @@
 import { Transform } from 'class-transformer'
 import { ActorAndActivityEntity } from 'src/share/entities'
-import { Column, Entity, OneToMany } from 'typeorm'
-import { AppointmentStatusEnum } from '../appointments.interface'
-import { AppointmentComment } from './appointment-comments.entity'
-import { AppointmentLog } from './appointment-logs.entity'
+import { Column, Entity } from 'typeorm'
+import { AppointmentStatusEnum, AppointmentStatusPreviewEnum } from '../appointments.interface'
 
 @Entity()
 export class Appointment extends ActorAndActivityEntity {
@@ -13,13 +11,15 @@ export class Appointment extends ActorAndActivityEntity {
 	@Column()
 	description: string
 
-	@Column({ default: AppointmentStatusEnum.TODO, enum: AppointmentStatusEnum })
-	@Transform(({ value }) => value.id)
+	@Transform(({ value }) => AppointmentStatusPreviewEnum[value])
+	@Column({ type: 'enum', default: AppointmentStatusEnum.TODO, enum: AppointmentStatusEnum })
 	status: AppointmentStatusEnum
 
-	@OneToMany<AppointmentLog>((type) => type, (log) => log.id)
-	logs: AppointmentLog[]
+	haveChange(name: string, description: string, status: AppointmentStatusEnum): boolean {
+		if (this.name !== name || this.description !== description || this.status !== status) {
+			return true
+		}
 
-	@OneToMany<AppointmentComment>(() => AppointmentComment, (comment) => comment.id)
-	comments: AppointmentComment[]
+		return false
+	}
 }

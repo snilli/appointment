@@ -11,7 +11,7 @@ import {
 	Patch,
 	Post,
 } from '@nestjs/common'
-import { CreateUserDto, UpdateUserInfoDto, UpdateUserPasswordDto, UpdateUserRoleDto } from './dto'
+import { CreateUserDto, UpdateUserInfoDto, UpdateUserPasswordDto } from './dto'
 import { UsersService } from './services'
 
 @Controller('users')
@@ -20,7 +20,7 @@ export class UsersController {
 
 	@Get(':id')
 	async get(@Param('id', ParseUUIDPipe) id: string) {
-		const user = await this.usersService.getUserById(id)
+		const user = await this.usersService.getById(id)
 		if (!user) {
 			throw new NotFoundException('User not found')
 		}
@@ -35,7 +35,6 @@ export class UsersController {
 			lastName: dto.lastName,
 			email: dto.email,
 			password: dto.password,
-			role: dto.role,
 		})
 
 		if (!user) {
@@ -52,20 +51,6 @@ export class UsersController {
 			firstName: dto.firstName,
 			lastName: dto.lastName,
 			email: dto.email,
-		})
-
-		if (!user) {
-			throw new NotFoundException('User not found')
-		}
-
-		return user
-	}
-
-	@Patch(':id/role')
-	async updateRole(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateUserRoleDto) {
-		const user = await this.usersService.updateRole({
-			id,
-			role: dto.role,
 		})
 
 		if (!user) {

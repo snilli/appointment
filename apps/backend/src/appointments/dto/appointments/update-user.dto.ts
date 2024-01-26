@@ -1,5 +1,6 @@
+import { Transform } from 'class-transformer'
 import { IsEnum, IsNotEmpty } from 'class-validator'
-import { AppointmentStatusEnum } from 'src/appointments/appointments.interface'
+import { AppointmentStatusEnum, AppointmentStatusPreviewEnum } from 'src/appointments/appointments.interface'
 
 export class UpdateAppointmentDto {
 	@IsNotEmpty()
@@ -8,7 +9,8 @@ export class UpdateAppointmentDto {
 	@IsNotEmpty()
 	description: string
 
-	@IsEnum(AppointmentStatusEnum)
+	@IsEnum(AppointmentStatusPreviewEnum)
 	@IsNotEmpty()
+	@Transform(({ value }) => AppointmentStatusPreviewEnum[value])
 	status: AppointmentStatusEnum
 }

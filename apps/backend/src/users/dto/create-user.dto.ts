@@ -1,5 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsStrongPassword } from 'class-validator'
-import { UserRoleEnum } from '../users.interface'
+import { IsEmail, IsNotEmpty, IsStrongPassword } from 'class-validator'
 
 export class CreateUserDto {
 	@IsNotEmpty()
@@ -13,8 +12,4 @@ export class CreateUserDto {
 
 	@IsStrongPassword()
 	password: string
-
-	@IsNotEmpty()
-	@IsEnum(UserRoleEnum)
-	role: string
 }

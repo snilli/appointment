@@ -1,8 +1,8 @@
 import { genSalt, hash } from 'bcrypt'
 import { Exclude } from 'class-transformer'
+import { RequestUser } from 'src/auth/decorators/interface'
 import { ActivityEntity } from 'src/share/entities'
 import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm'
-import { UserRoleEnum } from './users.interface'
 
 @Entity()
 @Unique('user_email', ['email'])
@@ -24,9 +24,6 @@ export class User extends ActivityEntity {
 	@Exclude()
 	password: string
 
-	@Column({ default: UserRoleEnum.USER, enum: UserRoleEnum })
-	role: string
-
 	@BeforeInsert()
 	@BeforeUpdate()
 	async hashPassword(): Promise<void> {
@@ -38,5 +35,16 @@ export class User extends ActivityEntity {
 		this.firstName = firstName
 		this.lastName = lastName
 		this.email = email
+	}
+
+	static createFromReq(reqUser: RequestUser): User {
+		const user = new User()
+		user.id = reqUser.id
+		user.email = reqUser.email
+		user.createdAt = new Date(reqUser.createdAt)
+		user.updatedAt = new Date(reqUser.updatedAt)
+		user.firstName = reqUser.firstName
+		user.lastName = reqUser.lastName
+		return user
 	}
 }
