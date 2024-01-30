@@ -1,27 +1,26 @@
-# ------ BUILDER ------ #
 FROM node:20-alpine AS base
+WORKDIR /app
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-
-WORKDIR /app
-COPY . .
-
 RUN pnpm add -g turbo
 
 FROM base AS builder
+WORKDIR /app
+COPY . .
 RUN turbo prune --scope=appointments --docker
 
 FROM base AS installer
 WORKDIR /app
 
-# COPY .gitignore .gitignore
+COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/full/ .
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
-
-RUN pnpm
+COPY --from=builder /app/out/full/ .
+RUN pnpm install --frozen-lockfile
 RUN turbo run build --filter=appointments...
+RUN pnpm install --prod --frozen-lockfile
 
 FROM base AS runner
 WORKDIR /app
@@ -39,9 +38,6 @@ COPY --from=installer --chown=nest:nodejs /app/package.json ./package.json
 COPY --from=installer --chown=nest:nodejs /app/node_modules ./node_modules
 COPY --from=installer --chown=nest:nodejs /app/turbo.json ./turbo.json
 
-
-WORKDIR /app/apps/backend
-
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "apps/backend/dist/main.js"]

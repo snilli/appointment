@@ -7,6 +7,14 @@ services:
       context: .
       dockerfile: ./apps/backend/Dockerfile
     restart: always
+    environment:
+      - DATABASE_NAME=appointments
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USERNAME=superboy
+      - DATABASE_PASSWORD=sofast
+      - JWT_SECRET=loging
+      - PASSWORD_SECRET=diging
     ports:
       - 3000:3000
 
