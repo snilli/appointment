@@ -1,7 +1,8 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-ENV PNPM_HOME="/pnpm"
+ENV PNPM_HOME /pnpm
+ENV CI true
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 RUN pnpm add -g turbo
@@ -20,6 +21,7 @@ COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=builder /app/out/full/ .
 RUN pnpm install --frozen-lockfile
 RUN turbo run build --filter=appointments...
+RUN pnpm prune --prod
 RUN pnpm install --prod --frozen-lockfile
 
 FROM base AS runner
