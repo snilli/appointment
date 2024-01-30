@@ -1,4 +1,6 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine AS node
+
+FROM node AS base
 WORKDIR /app
 
 ENV PNPM_HOME /pnpm
@@ -24,7 +26,7 @@ RUN turbo run build --filter=appointments...
 RUN pnpm prune --prod
 RUN pnpm install --prod --frozen-lockfile
 
-FROM base AS runner
+FROM node AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
